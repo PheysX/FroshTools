@@ -2,8 +2,10 @@
 
 namespace Frosh\Tools\Components;
 
+use APCUIterator;
 use Shopware\Storefront\Framework\Cache\CacheDecorator;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
+use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
@@ -29,6 +31,9 @@ class CacheAdapter
                 return CacheHelper::getSize($this->getPathFromFilesystemAdapter($this->adapter));
             case $this->adapter instanceof ArrayAdapter:
                 return 0;
+            case $this->adapter instanceof ApcuAdapter:
+                $aPCUIterator = new APCUIterator();
+                return $aPCUIterator->getTotalSize();
         }
 
         return 0;
@@ -74,6 +79,8 @@ class CacheAdapter
                 return 'Array';
             case $this->adapter instanceof PhpFilesAdapter:
                 return 'PHP files';
+            case $this->adapter instanceof ApcuAdapter:
+                return 'APCu';
         }
 
         return '';
